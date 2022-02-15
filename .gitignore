@@ -30,3 +30,19 @@
 *.exe
 *.out
 *.app
+
+# Mac Invisible Files
+*.DS_Store
+
+#PlatformIO
+*.checksum
+*.dblite
+*.elf
+*.hex
+idedata.json
+
+# VS Code
+c_cpp_properties.json
+extensions.json
+launch.json
+settings.json
