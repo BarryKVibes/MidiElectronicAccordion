@@ -44,7 +44,6 @@
 extern Button leftHandButtons[NumLeftHandButtons];
 extern Button rightHandButtons[NumRightHandButtons];
 
-
 #ifdef BUILD_RIGHT_HAND_MASTER
 
 BassButtonChangedHandler bassButtonChangedHandler;
@@ -52,7 +51,6 @@ ChordButtonChangedHandler chordButtonChangedHandler;
 ToneButtonChangedHandler toneButtonChangedHandler;
 
 #endif // BUILD_RIGHT_HAND_MASTER
-
 
 // TODO: Pass into ToneButtonChangedHandler as dependency?
 ToneButtonManager gToneButtonManager;

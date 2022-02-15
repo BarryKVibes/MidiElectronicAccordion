@@ -138,5 +138,4 @@ void MelodyButtonChangedHandler::HandleButtonChange(Button* buttons, byte button
   }
 }
 
-
 #endif // BUILD_RIGHT_HAND_MASTER

@@ -28,6 +28,7 @@
 #define Button_H
 
 #include "ButtonState.h"
+
 typedef struct
 {
   ButtonState buttonState;
