@@ -24,11 +24,11 @@
   
  ******************************************************************************/
 
-#include <ardumidi.h>
+#include "../lib/ArduMidi/ardumidi.h"
 
 #include "ButtonChangedHandlerBase.h"
 
-#include "SharedMacros.h"
+#include "../SharedMacros.h"
 
 // This class provides an interface for Button Changed Handlers.
 ButtonChangedHandlerBase::ButtonChangedHandlerBase()

@@ -24,7 +24,7 @@
   
  ******************************************************************************/
 
-#include <ardumidi.h>
+#include "lib/ArduMidi/ardumidi.h"
 
 #include "MIDIAccordion.h"
 
@@ -51,8 +51,18 @@ VolumeChangeManager::VolumeChangeManager()
 void VolumeChangeManager::SetCurrentMidiControlVolume(VolumeControlType volumeControlType, byte midiVolumeValue)
 {
   //DBG_PRINT_LN("VolumeChangeManager::SetCurrentMidiControlVolume() - VolumeControlType = " + String(volumeControlType) + "; midiVolumeValue = " + String(midiVolumeValue) + ".");
-
+#ifdef IGNORE_BELLOWS_VOLUME
+if (volumeControlType == VolumeControlType::Bellows)
+{
+  mCurMidiVolumeValue[volumeControlType] = MaxVolume;
+}
+else
+{
   mCurMidiVolumeValue[volumeControlType] = midiVolumeValue;
+}
+#else
+  mCurMidiVolumeValue[volumeControlType] = midiVolumeValue;
+#endif
 
   const bool IsForceUpdate = false;
   UpdateMidiVolumeControl(IsForceUpdate);
@@ -123,7 +133,7 @@ void VolumeChangeManager::UpdateMidiVolumeControl(bool forceUpdate)
         mCurMidiVolumeValue[VolumeControlType::Melody] == UninitializedMidiVolume ||
         mCurMidiVolumeValue[VolumeControlType::BassChord] == UninitializedMidiVolume)
     {
-      DBG_PRINT_LN("VolumeChangeManager::UpdateMidiVolumeControl() - Bellows: " + String(mCurMidiVolumeValue[VolumeControlType::Melody]) + "; Melody: " + String(mCurMidiVolumeValue[VolumeControlType::Bellows]) + "; BassChord: " + String(mCurMidiVolumeValue[VolumeControlType::BassChord]) + ".");
+      DBG_PRINT_LN("VolumeChangeManager::UpdateMidiVolumeControl() - Bellows: " + String(mCurMidiVolumeValue[VolumeControlType::Bellows]) + "; Melody: " + String(mCurMidiVolumeValue[VolumeControlType::Melody]) + "; BassChord: " + String(mCurMidiVolumeValue[VolumeControlType::BassChord]) + ".");
 
       return;
     }
@@ -132,7 +142,11 @@ void VolumeChangeManager::UpdateMidiVolumeControl(bool forceUpdate)
     mIsAllVolumesInitialized = true;
   }
 
+#ifdef IGNORE_BELLOWS_VOLUME
+  bool isBellowsVolumeChangedSignificantly = false;
+#else
   bool isBellowsVolumeChangedSignificantly = IsVolumeChangedSignificantly(VolumeControlType::Bellows);
+#endif
   bool isMelodyVolumeChangedSignificantly = IsVolumeChangedSignificantly(VolumeControlType::Melody);
   bool isBassChordVolumeChangedSignificantly = IsVolumeChangedSignificantly(VolumeControlType::BassChord);
 
@@ -203,7 +217,12 @@ void VolumeChangeManager::UpdateMidiVolumeControl(bool forceUpdate)
 uint8_t VolumeChangeManager::GetBellowsVolume()
 {
   uint8_t bellowsVolume;
-  
+
+#ifdef IGNORE_BELLOWS_VOLUME
+  bellowsVolume = MaxVolume;
+  return bellowsVolume;
+#endif
+
   // If Bellows-Controlled Volume switch is enabled, set bellows volume to the Bellows Potentiometer volume, otherwise use Max volume.
   if (gToneButtonManager.GetIsActive(ToneButtonRole::BellowsControlledVolumeEnabled))
   {

@@ -24,11 +24,11 @@
   
  ******************************************************************************/
 
-#include <ardumidi.h>
+#include "../lib/ArduMidi/ardumidi.h"
 
 #include "NoteButtonChangedHandler.h"
 
-#include "SharedMacros.h"
+#include "../SharedMacros.h"
 
 NoteButtonChangedHandler::NoteButtonChangedHandler()
 {

@@ -27,7 +27,7 @@
 #include <Arduino.h>
 
 #include "Utilities.h"
-#include "SharedMacros.h"
+#include "../SharedMacros.h"
 
 void blinkOnce()
 {

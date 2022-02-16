@@ -1,5 +1,5 @@
 /*******************************************************************************
-  MIDIAccordion.ino
+  MidiElectronicAccordion.ino
   
   MIDI Electronic Accordion
   https://github.com/BarryKVibes/MidiElectronicAccordion

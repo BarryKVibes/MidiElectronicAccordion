@@ -27,8 +27,8 @@
 #ifndef Utilities_H
 #define Utilities_H
 
-#include "Button.h"
-#include "Sensor.h"
+#include "../Button.h"
+#include "../Sensor.h"
 
 void blinkOnce();
 void blinkOnceAt(int rateMs);

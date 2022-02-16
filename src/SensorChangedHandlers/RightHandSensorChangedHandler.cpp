@@ -61,9 +61,11 @@ void RightHandSensorChangedHandler::HandleSensorChange(Sensor* sensors, byte sen
   switch(sensorIndex)
   {
     case RightHandSensorIndex::Bellows:
+#ifdef IGNORE_BELLOWS_VOLUME    
       bellowsVolumeSensorChangedHandler.HandleSensorChange(sensors, sensorIndex);
+#endif
       break;
-
+      
     case RightHandSensorIndex::Pitch:
       pitchPotentiometerSensorChangedHandler.HandleSensorChange(sensors, sensorIndex);
       break;

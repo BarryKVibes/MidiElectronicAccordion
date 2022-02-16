@@ -28,7 +28,7 @@
 
 #ifdef BUILD_RIGHT_HAND_MASTER
 
-#include <ardumidi.h>
+#include "../lib/ArduMidi/ardumidi.h"
 
 #include "TonePotentiometerSensorChangedHandler.h"
 #include "../SharedMacros.h"

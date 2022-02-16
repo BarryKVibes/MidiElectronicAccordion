@@ -28,7 +28,7 @@
 
 #ifdef BUILD_RIGHT_HAND_MASTER
 
-#include <ardumidi.h>
+#include "../lib/ArduMidi/ardumidi.h"
 
 #include "BellowsVolumeSensorChangedHandler.h"
 #include "../SharedMacros.h"
@@ -62,12 +62,12 @@ void BellowsVolumeSensorChangedHandler::HandleSensorChange(Sensor* sensors, byte
   // Map sensor value from Min to Max, then scale to 7 bits for MIDI CC.
   // map(value, fromLow, fromHigh, toLow, toHigh)
 
-#ifdef MIN_MIDI_VOLUME_WHEN_BELLOWS_IS_CLOSED
-  // Map Closed Bellows to Min Volume.
-  byte midiVolumeValue = (byte)map(sensorValue, 0x00, 0xFF, MinMidiVolume, MaxMidiVolume);
-#else
+#ifdef MAX_MIDI_VOLUME_WHEN_BELLOWS_IS_CLOSED
   // Map Closed Bellows to Max Volume.
   byte midiVolumeValue = (byte)map(sensorValue, 0x00, 0xFF, MaxMidiVolume, MinMidiVolume);
+#else
+  // Map Closed Bellows to Min Volume.
+  byte midiVolumeValue = (byte)map(sensorValue, 0x00, 0xFF, MinMidiVolume, MaxMidiVolume);
 #endif
 
   // DBG_PRINT_LN("BellowsVolumeSensorChangedHandler::HandleSensorChange() - " + GetSensorInfo(sensors, sensorIndex) + ".");

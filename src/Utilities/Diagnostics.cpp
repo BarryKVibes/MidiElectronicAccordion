@@ -29,7 +29,7 @@
 // Do not build if sending MIDI.
 #ifndef SEND_MIDI
 
-#include "SharedMacros.h"
+#include "../SharedMacros.h"
 #include "Diagnostics.h"
 
 Diagnostics::Diagnostics()
