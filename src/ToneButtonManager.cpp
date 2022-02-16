@@ -24,7 +24,7 @@
   
  ******************************************************************************/
 
-#include <ardumidi.h>
+#include "lib/ArduMidi/ardumidi.h"
 
 #include "Button.h"
 #include "MIDIAccordion.h"
