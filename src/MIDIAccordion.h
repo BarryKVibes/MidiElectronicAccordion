@@ -36,12 +36,12 @@
 // Comment out SEND_MIDI to debug MIDI using the Serial Monitor.
 #define SEND_MIDI
 
-// Uncomment to have minimum MIDI volume when the bellows is closed, otherwise closed bellows yields max MIDI volume.
-// #define MIN_MIDI_VOLUME_WHEN_BELLOWS_IS_CLOSED
+// Uncomment to have maximum MIDI volume when the bellows is closed, otherwise closed bellows yields min MIDI volume.
+// #define MAX_MIDI_VOLUME_WHEN_BELLOWS_IS_CLOSED
 
 // #define DISABLE_I2C
 // #define DISABLE_SENSOR_READS
-// #define IGNORE_BELLOWS_VOLUME
+#define IGNORE_BELLOWS_VOLUME
 // #define ENABLE_ALL_TONE_SWITCH_BUTTONS
 // #define DEBUG_I2C
 // #define PRINT_LH_BUTTON_FLAGS

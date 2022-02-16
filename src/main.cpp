@@ -108,11 +108,11 @@ Sensor rightHandSensors[NumRightHandSensors] = {
   // SensorState {value, pin}
 
   // Potentiometers
-  {0xFFFF, A0},
-  {0xFFFF, A1},
-  {0xFFFF, A2},
-  {0xFFFF, A3},
-  {0xFFFF, A4},
+  {0xFFFF, A0}, // Bellows Volume
+  {0xFFFF, A1}, // Pitch Potentiometer
+  {0xFFFF, A2}, // Tone Potentiometer
+  {0xFFFF, A3}, // Melody Volume
+  {0xFFFF, A4}, // Bass/Chord Volume
   };
 
 ButtonsManager* pButtonsManager = new ButtonsManager(leftHandButtons, rightHandButtons, NULL, rightHandSensors);
