@@ -28,21 +28,22 @@
 
 #include "Utilities.h"
 #include "../SharedMacros.h"
+#include "../SharedConstants.h"
 
 void blinkOnce()
 {
-  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+  digitalWrite(LedPin, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(1000);              // wait for a second
-  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
+  digitalWrite(LedPin, LOW);    // turn the LED off by making the voltage LOW
   delay(1000);              // wait for a second
 }
 
 // Blink LED at Pin 13 at specified rate.
 void blinkOnceAt(int rateMs)
 {
-  digitalWrite(13, HIGH);
+  digitalWrite(LedPin, HIGH);
   delay(rateMs/2);
-  digitalWrite(13, LOW);
+  digitalWrite(LedPin, LOW);
   delay(rateMs/2);
 }
 

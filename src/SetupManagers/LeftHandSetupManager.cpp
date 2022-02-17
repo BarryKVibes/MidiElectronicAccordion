@@ -55,7 +55,7 @@ LeftHandSetupManager::LeftHandSetupManager() : SetupManagerBase()
 void LeftHandSetupManager::Setup()
 {
   // Setup LED pin early to allow it to enable flashing error code.
-  pinMode(ledPin, OUTPUT);
+  pinMode(LedPin, OUTPUT);
 
 #ifdef SEND_MIDI
 // TODO: LH Arduino does not send MIDI; probably should remove this. TBD: Still should prevent debug prints if in non-debug version of code.

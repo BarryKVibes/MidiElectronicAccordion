@@ -42,7 +42,7 @@ RightHandSetupManager::RightHandSetupManager() : SetupManagerBase()
 void RightHandSetupManager::Setup()
 {
   // Setup LED pin early to allow it to enable flashing error code.
-  pinMode(ledPin, OUTPUT);
+  pinMode(LedPin, OUTPUT);
 
 #ifdef SEND_MIDI
   Serial.begin(BaudRateMidi);

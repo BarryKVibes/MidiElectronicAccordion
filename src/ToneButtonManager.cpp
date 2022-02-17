@@ -28,6 +28,7 @@
 
 #include "Button.h"
 #include "MIDIAccordion.h"
+#include "MIDIEventFlasher.h"
 #include "ToneButtonManager.h"
 #include "Utilities/Utilities.h"
 #include "SharedMacros.h"
@@ -35,6 +36,7 @@
 #include "VolumeChangeManager.h"
 
 extern VolumeChangeManager gVolumeChangeManager;
+extern MIDIEventFlasher gMIDIEventFlasher;
 
 // This class is used by the Right Hand Arduino to keep track of the Tone Button states.
 // If the state changes, this class reacts to the change depending on which switch was toggled.
@@ -118,6 +120,7 @@ void ToneButtonManager::SendAllNotesOffOnChannel(byte channelZeroBased)
   const byte AllNotesOffValue = 0; // Per MIDI Spec, https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
 
   midi_controller_change(channelZeroBased, ChannelAllNotesOffControl, AllNotesOffValue);
+  gMIDIEventFlasher.OnMidiEvent();
 #else
   DBG_PRINT_LN("ToneButtonManager::SendAllNotesOffOnChannel() - Zero-Based Channel = 0x" + String(channelZeroBased) + ".");
 #endif

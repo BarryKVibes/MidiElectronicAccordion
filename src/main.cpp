@@ -37,6 +37,7 @@
   #include "SensorChangedHandlers/RightHandSensorChangedHandler.h"
   #include "VolumeChangeManager.h"
   #include "ProgramChangeManager.h"
+  #include "MIDIEventFlasher.h"
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   #include "SetupManagers/LeftHandSetupManager.h"
   #include "ButtonChangedHandlers/LeftHandButtonChangedHandler.h"
@@ -123,6 +124,7 @@ MelodyButtonChangedHandler buttonChangedHandler;
 RightHandSensorChangedHandler sensorChangedHandler;
 VolumeChangeManager gVolumeChangeManager;
 ProgramChangeManager gProgramChangeManager;
+MIDIEventFlasher gMIDIEventFlasher;
 
 #elif defined(BUILD_LEFT_HAND_SLAVE)
 ButtonsManager* pButtonsManager = new ButtonsManager(leftHandButtons, NULL, NULL, NULL);
@@ -166,6 +168,8 @@ void loop()
   pButtonsManager->FetchLeftHandArduinoButtons(buttonChangedHandler);
   #endif // DISABLE_I2C
 
+  gMIDIEventFlasher.UpdateStatusLed();
+  
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   // DBG_PRINT_LN("Loop() BUILD_LEFT_HAND_SLAVE - Calling pButtonsManager->ReadButtons().");
   pButtonsManager->ReadButtons(leftHandButtons, NumLeftHandButtons, buttonChangedHandler);

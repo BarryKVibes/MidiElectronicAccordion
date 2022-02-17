@@ -30,7 +30,8 @@
 #include <Arduino.h>
 
 // Constants
-const int ledPin = 13;
+const int LedPin = 13;
+const uint32_t MidiEventFlashDurationMilliseconds = 10;
 
 // MIDI Baud rate is 31250 bits per second.
 const unsigned long BaudRateMidi = 31250;

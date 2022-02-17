@@ -26,9 +26,12 @@
 
 #include "../lib/ArduMidi/ardumidi.h"
 
+#include "../MIDIEventFlasher.h"
 #include "NoteButtonChangedHandler.h"
 
 #include "../SharedMacros.h"
+
+extern MIDIEventFlasher gMIDIEventFlasher;
 
 NoteButtonChangedHandler::NoteButtonChangedHandler()
 {
@@ -45,6 +48,7 @@ void NoteButtonChangedHandler::SendMidiNoteCommand(byte noteNum, bool isActive, 
     // Button is pressed; send Note On.
 #ifdef SEND_MIDI
     midi_note_on(channelZeroBased, noteNum, DefaultVelocity);
+    gMIDIEventFlasher.OnMidiEvent();
 #else
     DBG_PRINT_LN(" - MIDI Note On: 0x" + String(noteNum, HEX));
 #endif
@@ -53,6 +57,7 @@ void NoteButtonChangedHandler::SendMidiNoteCommand(byte noteNum, bool isActive, 
     // Button is released; send Note On.
 #ifdef SEND_MIDI
     midi_note_off(channelZeroBased, noteNum, DefaultVelocity);
+    gMIDIEventFlasher.OnMidiEvent();
 #else
     DBG_PRINT_LN(" - MIDI Note Off: 0x" + String(noteNum, HEX));
 #endif
