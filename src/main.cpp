@@ -34,6 +34,7 @@
 #if defined(BUILD_RIGHT_HAND_MASTER)
   #include "SetupManagers/RightHandSetupManager.h"
   #include "ButtonChangedHandlers/MelodyButtonChangedHandler.h"
+  #include "ButtonChangedHandlers/ProgramChangeButtonChangedHandler.h"
   #include "SensorChangedHandlers/RightHandSensorChangedHandler.h"
   #include "VolumeChangeManager.h"
   #include "ProgramChangeManager.h"
@@ -99,8 +100,11 @@ Button rightHandButtons[NumRightHandButtons] = {
 
   // Notes 31-41
   {{false, 2, 0, 0, 0}, 0}, {{false, 3, 0, 0, 0}, 0}, {{false, 4, 0, 0, 0}, 0}, {{false, 5, 0, 0, 0}, 0},
-  {{false, 8, 0, 0, 0}, 0}, {{false, 9, 0, 0, 0}, 0}, {{false, 10, 0, 0, 0}, 0}, {{false, 11, 0, 0, 0}, 0},
-  {{false, 12, 0, 0, 0}, 0}
+  {{false, 6, 0, 0, 0}, 0}, {{false, 7, 0, 0, 0}, 0}, {{false, 8, 0, 0, 0}, 0}, {{false, 9, 0, 0, 0}, 0},
+  {{false, 10, 0, 0, 0}, 0},
+
+  // Custom Buttons; Decrement and Increment Program Number.
+  {{false, 11, 0, 0, 0}, 0}, {{false, 12, 0, 0, 0}, 0}
   };
 
 // Right Hand Sensor configuration.
@@ -120,7 +124,8 @@ ButtonsManager* pButtonsManager = new ButtonsManager(leftHandButtons, rightHandB
 
 // RightHandLoopHandler loopHandler;
 RightHandSetupManager setupManager;
-MelodyButtonChangedHandler buttonChangedHandler;
+MelodyButtonChangedHandler melodyButtonChangedHandler;
+ProgramChangeButtonChangedHandler programChangeButtonChangedHandler;
 RightHandSensorChangedHandler sensorChangedHandler;
 VolumeChangeManager gVolumeChangeManager;
 ProgramChangeManager gProgramChangeManager;
@@ -128,7 +133,7 @@ MIDIEventFlasher gMIDIEventFlasher;
 
 #elif defined(BUILD_LEFT_HAND_SLAVE)
 ButtonsManager* pButtonsManager = new ButtonsManager(leftHandButtons, NULL, NULL, NULL);
-LeftHandButtonChangedHandler buttonChangedHandler;
+LeftHandButtonChangedHandler leftHandButtonChangedHandler;
 // LeftHandSensorChangedHandler sensorChangedHandler;
 LeftHandSetupManager setupManager;
 #endif
@@ -155,8 +160,12 @@ void loop()
   // LOG_LOOP_TIME();
 
   // Read buttons attached to Right Hand Arduino.
-  // DBG_PRINT_LN("Loop() BUILD_RIGHT_HAND_MASTER - Calling pButtonsManager->ReadButtons().");
-  pButtonsManager->ReadButtons(rightHandButtons, NumRightHandButtons, buttonChangedHandler);
+
+  // Keys
+  pButtonsManager->ReadButtons(rightHandButtons, 0, 40, melodyButtonChangedHandler);
+
+  // Custom Buttons
+  pButtonsManager->ReadButtons(rightHandButtons, 41, 42, programChangeButtonChangedHandler);
   
   #ifndef DISABLE_SENSOR_READS
   pButtonsManager->ReadSensors(rightHandSensors, NumRightHandSensors, sensorChangedHandler);
@@ -165,7 +174,7 @@ void loop()
   #ifndef DISABLE_I2C
   // Request LH Arduino button states.
   // DBG_PRINT_LN("Loop() BUILD_RIGHT_HAND_MASTER - Calling pButtonsManager->FetchLeftHandArduinoButtons().");
-  pButtonsManager->FetchLeftHandArduinoButtons(buttonChangedHandler);
+  pButtonsManager->FetchLeftHandArduinoButtons();
   #endif // DISABLE_I2C
 
   gMIDIEventFlasher.UpdateStatusLed();

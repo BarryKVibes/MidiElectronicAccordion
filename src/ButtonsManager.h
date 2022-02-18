@@ -53,7 +53,7 @@ private:
 public:
   ButtonsManager(Button* leftHandButtons, Button* rightHandButtons, Sensor* leftHandSensors, Sensor* rightHandSensors);
 
-  void ReadButtons(Button* buttons, int numButtons, ButtonChangedHandlerBase& buttonChangedHandler);
+  void ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler);
 
 #ifdef BUILD_RIGHT_HAND_MASTER
   void ReadSensors(Sensor* sensors, int numSensors, SensorChangedHandlerBase& sensorChangedHandler);
@@ -61,7 +61,7 @@ public:
 
 #ifdef BUILD_RIGHT_HAND_MASTER
   // This method is only used by the RH Arduino.
-  void FetchLeftHandArduinoButtons(ButtonChangedHandlerBase& buttonChangedHandler);
+  void FetchLeftHandArduinoButtons();
 #endif
 
 protected:
@@ -71,7 +71,7 @@ protected:
 #ifdef BUILD_RIGHT_HAND_MASTER
   // The following methods are only used by the RH Arduino.
   void UpdateNewButtonFlags(uint8_t receivedByte, int index);
-  void UpdateLeftHandButtonStates(ButtonChangedHandlerBase& buttonChangedHandler);
+  void UpdateLeftHandButtonStates();
 #endif
 
 private:

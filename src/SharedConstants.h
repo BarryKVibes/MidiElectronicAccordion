@@ -42,7 +42,7 @@ const unsigned long BaudRateSerialMonitor = 9600;
 
 const byte LeftHandI2CDeviceId = 1;
 
-const int NumRightHandButtons = 41;
+const int NumRightHandButtons = 43; // 41 Keys + 2 Custom Buttons.
 const int NumLeftHandButtons = 38;
 
 const int NumLeftHandSensors = 0;

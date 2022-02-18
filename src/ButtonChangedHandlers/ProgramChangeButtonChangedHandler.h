@@ -1,5 +1,5 @@
 /*******************************************************************************
-  MIDIAccordion.h
+  ProgramChangeButtonChangedHandler.h
   
   MIDI Electronic Accordion
   https://github.com/BarryKVibes/MidiElectronicAccordion
@@ -24,27 +24,26 @@
   
  ******************************************************************************/
 
-#ifndef MIDIAccordion_H
-#define MIDIAccordion_H
+#ifndef ProgramChangeButtonChangedHandler_H
+#define ProgramChangeButtonChangedHandler_H
 
-// This project contains the logic for both the Right Hand (master) and Left Hand (slave).
-// Uncomment the corresponding #define below.
-#define BUILD_RIGHT_HAND_MASTER
-// #define BUILD_LEFT_HAND_SLAVE
+#include <Arduino.h>
 
-// The following compiler directives are used for debugging.
-// Comment out SEND_MIDI to debug MIDI using the Serial Monitor.
-#define SEND_MIDI
+#include "../MIDIAccordion.h"
 
-// Uncomment to have maximum MIDI volume when the bellows is closed, otherwise closed bellows yields min MIDI volume.
-// #define MAX_MIDI_VOLUME_WHEN_BELLOWS_IS_CLOSED
+#ifdef BUILD_RIGHT_HAND_MASTER
 
-#define ENABLE_CUSTOM_PROGRAM_CHANGE_BUTTONS
-// #define DISABLE_I2C
-// #define DISABLE_SENSOR_READS
-#define IGNORE_BELLOWS_VOLUME
-// #define ENABLE_ALL_TONE_SWITCH_BUTTONS
-// #define DEBUG_I2C
-// #define PRINT_LH_BUTTON_FLAGS
+#include "../Button.h"
+#include "ButtonChangedHandlerBase.h"
 
+// This class handles custom buttons added to Decrement and Increment Program Number.
+class ProgramChangeButtonChangedHandler : public ButtonChangedHandlerBase
+{
+public:
+  ProgramChangeButtonChangedHandler();
+
+  virtual void HandleButtonChange(Button* button, byte buttonIndex);
+};
+
+#endif // BUILD_RIGHT_HAND_MASTER
 #endif

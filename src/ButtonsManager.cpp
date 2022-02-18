@@ -76,11 +76,11 @@ ButtonsManager::ButtonsManager(Button* leftHandButtons, Button* rightHandButtons
 
 // This method reads the digital input pin corresponding the the buttons passed in, after the debounce time has elapsed.
 // It is used by both the RH and LH Arduinos.
-void ButtonsManager::ReadButtons(Button* buttons, int numButtons, ButtonChangedHandlerBase& buttonChangedHandler)
+void ButtonsManager::ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler)
 {
   // DBG_PRINT_LN("ButtonsManager::ReadButtons() - Started.");
   bool newButtonState = false;
-  for (byte i = 0; i < numButtons; i++)
+  for (byte i = startButtonIndex; i <= endButtonIndex; i++)
   {
      if (!IsButtonDebounced(buttons[i]))
     {
@@ -153,7 +153,7 @@ void ButtonsManager::ReadSensors(Sensor* sensors, int numSensors, SensorChangedH
 
 // Get LH Arduino button states via I2C.
 // This method sends an I2C Request to the LH Arduino and then reads a byte at a time from the Wire object.
-void ButtonsManager::FetchLeftHandArduinoButtons(ButtonChangedHandlerBase& buttonChangedHandler)
+void ButtonsManager::FetchLeftHandArduinoButtons()
 {
 #ifdef DISABLE_I2C
   return;
@@ -251,13 +251,13 @@ void ButtonsManager::FetchLeftHandArduinoButtons(ButtonChangedHandlerBase& butto
 
 #endif // DEBUG_I2C && !SEND_MIDI
 
-  UpdateLeftHandButtonStates(buttonChangedHandler);
+  UpdateLeftHandButtonStates();
 }
 
 // This method updates all Left Hand Buttons states after the button flags have been updated from the I2C response from the LH Arduino.
 // This method also includes the Volume Potentiometer analog input value.
 // This method is called by the RH Arduino. It only updates the button state after the debounce time has elapsed.
-void ButtonsManager::UpdateLeftHandButtonStates(ButtonChangedHandlerBase& buttonChangedHandler)
+void ButtonsManager::UpdateLeftHandButtonStates()
 {
   unsigned long lastToggleTimeMs = millis();
 
