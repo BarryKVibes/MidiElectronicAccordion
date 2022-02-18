@@ -59,10 +59,7 @@ void ProgramChangeButtonChangedHandler::HandleButtonChange(Button* buttons, byte
 
   // DBG_PRINT_LN("ProgramChangeButtonChangedHandler::HandleButtonChange() - buttons["+String(buttonIndex)+"] @ Pin "+String(buttons[buttonIndex].buttonState.pin)+"= "+String(buttons[buttonIndex].buttonState.active)+".");
 
-  // Program Change message requires a MIDI Channel; for Mac MainStage, changing the patch, we can use MIDI Channel 0.
-  // For a Multitimbral device, MIDI Channel is important, and this code would need to be modified to send
-  // Program Change on multiple MIDI Channels.
-  const uint8_t ZeroBasedMidiChannelForProgramChange = 0;
+  uint8_t zeroBasedMidiChannelForProgramChange = gProgramChangeManager.GetHighestEnabledLayersChannel();
 
   // If low F# or G#, send decrement, or increment program number and send program change MIDI message.
   if (buttonIndex == ButtonIndexForDecrementProgramNumber)
@@ -80,7 +77,7 @@ void ProgramChangeButtonChangedHandler::HandleButtonChange(Button* buttons, byte
         gProgramChangeManager.DecrementProgramNumber();
       }
 
-      gProgramChangeManager.SendCurrentProgramNumberChange(ZeroBasedMidiChannelForProgramChange);
+      gProgramChangeManager.SendCurrentProgramNumberChange(zeroBasedMidiChannelForProgramChange);
     }
 
     return;
@@ -101,7 +98,7 @@ void ProgramChangeButtonChangedHandler::HandleButtonChange(Button* buttons, byte
         gProgramChangeManager.IncrementProgramNumber();
       }
 
-      gProgramChangeManager.SendCurrentProgramNumberChange(ZeroBasedMidiChannelForProgramChange);
+      gProgramChangeManager.SendCurrentProgramNumberChange(zeroBasedMidiChannelForProgramChange);
     }
 
     return;

@@ -27,15 +27,30 @@
 #ifndef ProgramChangeManager_H
 #define ProgramChangeManager_H
 
+// This class is used by the Right Hand Arduino to keep track of the current program number, 
+// increment/decrement the current program number, and send the current program number Program Change message.
 class ProgramChangeManager  {
 
 public:
+
+  // This method is the default constructor.
   ProgramChangeManager();
 
+  // This method increments the program number member variable. It does not send the Program Change message.
   void IncrementProgramNumber();
+
+  // This method decrements the program number member variable. It does not send the Program Change message.
   void DecrementProgramNumber();
+  
+  // This method sets the program number member variable to 0. It does not send the Program Change message.
   void ResetProgramNumber();
+
+  // This method sends the current program number on the zero-based MIDI channel, passed in.
   void SendCurrentProgramNumberChange(uint8_t zeroBasedMidiChannel);
+
+  // This method returns the zero-based MIDI channel corresponding to the highest enabled Melody Layer.
+  // If no layers are enabled, this method returns 0.
+  uint8_t GetHighestEnabledLayersChannel();
 
 private:
   uint8_t mCurMidiProgramNum = 0;

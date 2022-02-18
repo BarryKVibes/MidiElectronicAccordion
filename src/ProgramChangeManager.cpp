@@ -32,20 +32,17 @@
 #include "Utilities/Utilities.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
+#include "ToneButtonManager.h"
 
 const uint8_t MaxProgramNumber = 0x7F;
 
 extern MIDIEventFlasher gMIDIEventFlasher;
+extern ToneButtonManager gToneButtonManager;
 
-// This class is used by the Right Hand Arduino to keep track of the current program number, 
-// increment/decrement the current program number, and send the current program number Program Change message.
-
-// This method is the default constructor.
 ProgramChangeManager::ProgramChangeManager()
 {
 }
 
-// This method increments the program number member variable. It does not send the Program Change message.
 void ProgramChangeManager::IncrementProgramNumber()
 {
   if (mCurMidiProgramNum < MaxProgramNumber)
@@ -58,7 +55,6 @@ void ProgramChangeManager::IncrementProgramNumber()
   }
 }
 
-// This method decrements the program number member variable. It does not send the Program Change message.
 void ProgramChangeManager::DecrementProgramNumber()
 {
   if (mCurMidiProgramNum == 0)
@@ -71,13 +67,11 @@ void ProgramChangeManager::DecrementProgramNumber()
   }
 }
 
-// This method sets the program number member variable to 0. It does not send the Program Change message.
 void ProgramChangeManager::ResetProgramNumber()
 {
   mCurMidiProgramNum = 0;
 }
 
-// This method sends the current program number on the zero-based MIDI channel, passed in.
 void ProgramChangeManager::SendCurrentProgramNumberChange(uint8_t zeroBasedMidiChannel)
 {
 #ifdef SEND_MIDI
@@ -86,4 +80,28 @@ void ProgramChangeManager::SendCurrentProgramNumberChange(uint8_t zeroBasedMidiC
 #else
   DBG_PRINT_LN("ProgramChangeManager::SendCurrentProgramNumberChange() - Sending Program Change = " + String(mCurMidiProgramNum) + ".");
 #endif
+}
+
+uint8_t ProgramChangeManager::GetHighestEnabledLayersChannel()
+{
+  uint8_t zeroBasedMidiChannel = RightHandLayer1ZeroBasedMidiChannel;
+
+  if (gToneButtonManager.GetIsActive(ToneButtonRole::MelodyLayer4Enabled))
+  {
+    zeroBasedMidiChannel = RightHandLayer4ZeroBasedMidiChannel;
+  }
+  else if (gToneButtonManager.GetIsActive(ToneButtonRole::MelodyLayer3Enabled))
+  {
+    zeroBasedMidiChannel = RightHandLayer3ZeroBasedMidiChannel;
+  }
+  else if (gToneButtonManager.GetIsActive(ToneButtonRole::MelodyLayer2Enabled))
+  {
+    zeroBasedMidiChannel = RightHandLayer2ZeroBasedMidiChannel;
+  }
+  else if (gToneButtonManager.GetIsActive(ToneButtonRole::MelodyLayer1Enabled))
+  {
+    zeroBasedMidiChannel = RightHandLayer1ZeroBasedMidiChannel;
+  }
+
+  return zeroBasedMidiChannel;
 }
