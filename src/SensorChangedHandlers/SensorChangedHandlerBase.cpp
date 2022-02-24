@@ -38,4 +38,26 @@ void SensorChangedHandlerBase::HandleSensorChange(Sensor* sensor, byte sensorInd
 {
 }
 
+bool SensorChangedHandlerBase::IsSensorValueChangedSignificantly(uint16_t newSensorValue)
+{
+  uint8_t sensorDifference;
+  if (newSensorValue > mCurSensorValue)
+  {
+    sensorDifference = newSensorValue - mCurSensorValue;
+  }
+  else
+  {
+    sensorDifference = mCurSensorValue - newSensorValue;
+  }
+
+  if (sensorDifference >= mMinSensorDifference)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 #endif // BUILD_RIGHT_HAND_MASTER

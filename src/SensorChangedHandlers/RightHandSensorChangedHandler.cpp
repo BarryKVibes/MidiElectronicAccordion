@@ -24,7 +24,7 @@
   
  ******************************************************************************/
 
-// TODO: Change name to RightHandSensorChangedManager, MasterSensorChangedManager?
+// TODO: Change name to RightHandSensorChangedManager, MasterSensorChangedManager, MasterSensorChangedRouter?
 
 // This class sends the sensor change event to the corresponding handler object, based on the sensorIndex.
 

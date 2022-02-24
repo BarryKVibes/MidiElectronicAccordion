@@ -39,6 +39,13 @@ public:
   SensorChangedHandlerBase();
 
   virtual void HandleSensorChange(Sensor* sensor, byte sensorIndex);
+
+protected:
+  bool IsSensorValueChangedSignificantly(uint16_t newSensorValue);
+
+protected:
+  uint16_t mCurSensorValue = 0;
+  uint8_t mMinSensorDifference = 2;
 };
 
 #endif

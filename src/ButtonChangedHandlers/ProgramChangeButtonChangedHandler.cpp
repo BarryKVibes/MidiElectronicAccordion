@@ -43,8 +43,8 @@ extern ProgramChangeManager gProgramChangeManager; // TODO: Inject dependency.
 const byte ButtonIndexForDecrementProgramNumber = 41;
 const byte ButtonIndexForIncrementProgramNumber = 42;
 
-// This class handles Right Hand Arduino note button changes. 
-// It sends corresponding MIDI Note On/Off commands.
+// This class handles Right Hand Arduino Increment/Decrement Program button changes. 
+// It sends corresponding MIDI Program Change message.
 ProgramChangeButtonChangedHandler::ProgramChangeButtonChangedHandler()
 {
 }

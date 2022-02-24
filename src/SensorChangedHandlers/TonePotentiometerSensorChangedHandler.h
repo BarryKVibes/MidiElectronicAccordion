@@ -35,12 +35,19 @@
 
 #include "SensorChangedHandlerBase.h"
 
+// This class sends a Program Change message based on the potentiometer position.
+// To prevent noise in the potentiometer from constantly changing the program, the
+// sesnor value must change by at least two.
 class TonePotentiometerSensorChangedHandler : public SensorChangedHandlerBase
 {
 public:
   TonePotentiometerSensorChangedHandler();
 
   void HandleSensorChange(Sensor* sensors, byte sensorIndex);
+
+private:
+  static const byte MinMidiProgram;
+  static const byte MaxMidiProgram;
 };
 
 #endif // BUILD_RIGHT_HAND_MASTER

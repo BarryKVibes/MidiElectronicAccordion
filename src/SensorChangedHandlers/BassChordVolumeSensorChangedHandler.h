@@ -44,7 +44,8 @@ public:
 
 protected:
   static const float MinVolumePercentOfMax;
-  static const byte MinVolume;
+  static const byte MinMidiVolume;
+  static const byte MaxMidiVolume;
 };
 
 #endif // BUILD_RIGHT_HAND_MASTER

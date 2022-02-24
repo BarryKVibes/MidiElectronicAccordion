@@ -33,16 +33,41 @@
 #include "TonePotentiometerSensorChangedHandler.h"
 #include "../SharedMacros.h"
 #include "../ToneButtonManager.h"
-#include "../VolumeChangeManager.h"
+#include "../ProgramChangeManager.h"
 
-// TODO: Not implemented.
+// TODO: Move common constants and code to base class.
+extern ProgramChangeManager gProgramChangeManager;
+
+// Scale min volume from 8-bit to 7-bit CC value by shifting right by one.
+const byte TonePotentiometerSensorChangedHandler::MinMidiProgram = (byte)0x00;
+const byte TonePotentiometerSensorChangedHandler::MaxMidiProgram = (byte)0x7F;
+
+// This class is used by the Right Hand Arduino upon detecting Tone Control potentiometer value changes.
+// It sends corresponding MIDI Channel Program Change on the channel corresponding to the highest enabled melody layer switch.
 TonePotentiometerSensorChangedHandler::TonePotentiometerSensorChangedHandler() : SensorChangedHandlerBase()
 {
 }
 
 void TonePotentiometerSensorChangedHandler::HandleSensorChange(Sensor* sensors, byte sensorIndex)
 {
-  // TODO: Not implemented.
+  uint16_t sensorValue = sensors[sensorIndex].sensorState.value;
+  if(!SensorChangedHandlerBase::IsSensorValueChangedSignificantly(sensorValue))
+  {
+    // Prevent noisy pot from changing program.
+    return;
+  }
+
+  mCurSensorValue = sensorValue;
+
+  // Map sensor value from Min to Max, then scale to 7 bits for MIDI CC.
+  // map(value, fromLow, fromHigh, toLow, toHigh)
+  byte midiProgramValue = (byte)map(sensorValue, 0x00, 0xFF, MinMidiProgram, MaxMidiProgram);
+
+  uint8_t zeroBasedMidiChannelForProgramChange = gProgramChangeManager.GetHighestEnabledLayersChannel();
+
+  // DBG_PRINT_LN("TonePotentiometerSensorChangedHandler::HandleSensorChange() - Sensor Value = " + String(sensorValue) + "; Program Value = " + String(midiProgramValue) + ".");
+  gProgramChangeManager.SetProgramNumber(midiProgramValue);
+  gProgramChangeManager.SendCurrentProgramNumberChange(zeroBasedMidiChannelForProgramChange);
 }
 
 #endif // BUILD_RIGHT_HAND_MASTER

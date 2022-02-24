@@ -67,11 +67,16 @@ void ProgramChangeManager::DecrementProgramNumber()
   }
 }
 
+void ProgramChangeManager::SetProgramNumber(uint8_t zeroBasedProgramNumber)
+{
+  mCurMidiProgramNum = zeroBasedProgramNumber;
+}
+
 void ProgramChangeManager::ResetProgramNumber()
 {
   mCurMidiProgramNum = 0;
 }
-
+  
 void ProgramChangeManager::SendCurrentProgramNumberChange(uint8_t zeroBasedMidiChannel)
 {
 #ifdef SEND_MIDI

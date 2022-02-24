@@ -41,6 +41,9 @@ public:
 
   // This method decrements the program number member variable. It does not send the Program Change message.
   void DecrementProgramNumber();
+
+  // This method sets the program number member variable. It does not send the Program Change message.
+  void SetProgramNumber(uint8_t zeroBasedProgramNumber);
   
   // This method sets the program number member variable to 0. It does not send the Program Change message.
   void ResetProgramNumber();

@@ -41,7 +41,8 @@ extern VolumeChangeManager gVolumeChangeManager;
 const float BassChordVolumeSensorChangedHandler::MinVolumePercentOfMax = 0.10;
 
 // Scale min volume from 8-bit to 7-bit CC value by shifting right by one.
-const byte BassChordVolumeSensorChangedHandler::MinVolume = (byte)((float)0xFF * MinVolumePercentOfMax) >> 1;
+const byte BassChordVolumeSensorChangedHandler::MinMidiVolume = (byte)((float)0xFF * MinVolumePercentOfMax) >> 1;
+const byte BassChordVolumeSensorChangedHandler::MaxMidiVolume = (byte)0x7F;
 
 // This class is used by the Right Hand Arduino upon detecting Volume Sensor value changes from the Left Hand Arduino over I2C.
 // It sends corresponding MIDI Channel Volume Control CC command, 0x07 on MIDI Channel 1.
@@ -58,9 +59,9 @@ void BassChordVolumeSensorChangedHandler::HandleSensorChange(Sensor* sensors, by
 
   // Map sensor value from Min to Max, then scale to 7 bits for MIDI CC.
   // map(value, fromLow, fromHigh, toLow, toHigh)
-  byte midiVolumeValue = (byte)map(sensorValue, 0x00, 0xFF, MinVolume, 0x7F);
+  byte midiVolumeValue = (byte)map(sensorValue, 0x00, 0xFF, MinMidiVolume, MaxMidiVolume);
 
-  // if(!gIsSendMidi) {DbgPrintLn("BassChordVolumeSensorChangedHandler::HandleSensorChange() - " + GetSensorInfo(sensors, sensorIndex) + ".");}
+  // DBG_PRINT_LN("BassChordVolumeSensorChangedHandler::HandleSensorChange() - " + GetSensorInfo(sensors, sensorIndex) + ".");
   gVolumeChangeManager.SetCurrentMidiControlVolume(VolumeChangeManager::VolumeControlType::BassChord, midiVolumeValue);
 }
 
