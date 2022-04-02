@@ -30,8 +30,10 @@
 #include "NoteButtonChangedHandler.h"
 
 #include "../SharedMacros.h"
+#include "../StatusManager.h"
 
 extern MIDIEventFlasher gMIDIEventFlasher;
+extern StatusManager gStatusManager;
 
 NoteButtonChangedHandler::NoteButtonChangedHandler()
 {
@@ -41,25 +43,29 @@ NoteButtonChangedHandler::NoteButtonChangedHandler()
 void NoteButtonChangedHandler::SendMidiNoteCommand(byte noteNum, bool isActive, byte channelZeroBased, String FileName)
 {
   DBG_PRINT(FileName + "::SendMidiNoteCommand(noteNum, isActive, channelZeroBased)  = (" + String(noteNum, HEX) + ", "+ String(isActive) + ", "+ String(channelZeroBased) + ")");
-
+  
   // Send Note On if active, otherwise Note Off.
   if (isActive) {
     
     // Button is pressed; send Note On.
 #ifdef SEND_MIDI
     midi_note_on(channelZeroBased, noteNum, DefaultVelocity);
-    gMIDIEventFlasher.OnMidiEvent();
+   // gMIDIEventFlasher.OnMidiEvent();
 #else
     DBG_PRINT_LN(" - MIDI Note On: 0x" + String(noteNum, HEX));
 #endif
-  }
+
+    gStatusManager.OnMidiEvent(MidiEventType::NoteOn, noteNum, channelZeroBased);
+   }
   else {
     // Button is released; send Note On.
 #ifdef SEND_MIDI
     midi_note_off(channelZeroBased, noteNum, DefaultVelocity);
-    gMIDIEventFlasher.OnMidiEvent();
+    // gMIDIEventFlasher.OnMidiEvent();
 #else
     DBG_PRINT_LN(" - MIDI Note Off: 0x" + String(noteNum, HEX));
 #endif
+
+    gStatusManager.OnMidiEvent(MidiEventType::NoteOff, noteNum, channelZeroBased);
   }
 }

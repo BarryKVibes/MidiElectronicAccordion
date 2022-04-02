@@ -39,6 +39,7 @@
   #include "VolumeChangeManager.h"
   #include "ProgramChangeManager.h"
   #include "MIDIEventFlasher.h"
+  #include "StatusManager.h"
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   #include "SetupManagers/LeftHandSetupManager.h"
   #include "ButtonChangedHandlers/LeftHandButtonChangedHandler.h"
@@ -130,6 +131,7 @@ RightHandSensorChangedHandler sensorChangedHandler;
 VolumeChangeManager gVolumeChangeManager;
 ProgramChangeManager gProgramChangeManager;
 MIDIEventFlasher gMIDIEventFlasher;
+StatusManager gStatusManager;
 
 #elif defined(BUILD_LEFT_HAND_SLAVE)
 ButtonsManager* pButtonsManager = new ButtonsManager(leftHandButtons, NULL, NULL, NULL);
