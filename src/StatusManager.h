@@ -29,14 +29,16 @@
 
 #ifdef BUILD_RIGHT_HAND_MASTER
 
+#include "SharedConstants.h"
+
 enum StatusIndicatorMode
 {
-  // Keep LED on while any note button is depressed. Does not indicate any other MIDI message type.
-  // Use this mode to debug stuck notes.
-  OnWhileAnyNoteButtonDepressed,
-
-  // Momentarily flash LED for every sent MIDI event.
+  // Momentarily flash LED for every sent MIDI event. This is the default Status Indicator Mode.
   FlashMidiEvents,
+
+  // Keeps the Status LED on while any note button is depressed.
+  // Use this mode to debug stuck notes.
+  OnWhileAnyNoteButtonDepressed
 };
 
 enum MidiEventType
@@ -46,25 +48,34 @@ enum MidiEventType
   Other
 };
 
-// This class provides manages the MIDI Status indicator. 
+// This class manages the Status Indicator LED.
 class StatusManager
 { 
 private:
-  StatusIndicatorMode mStatusIndicatorMode = StatusIndicatorMode::OnWhileAnyNoteButtonDepressed;
+  const StatusIndicatorMode DefaultStatusIndicatorMode = StatusIndicatorMode::FlashMidiEvents;
+  StatusIndicatorMode mStatusIndicatorMode = DefaultStatusIndicatorMode;
+
+  // Tracks Note On states for MIDI notes. 128 Notes packed into eight 32-bit bytes. Size = 8 * sizeof(uint32_t) = 32 Bytes.
+  static const uint8_t NumNoteFlagBanks = MaxMidiNotes / NumMidiChannels;
+  uint32_t mNoteOnFlags[NumNoteFlagBanks][NumMidiChannels];
 
 public:
   StatusManager();
 
-  // Reads right-hand key combinations to set the Status Indicator Mode.
-  // No key - Default mode (FlashMidiEvents)
-  // Lowest F - OnWhileAnyNoteOn
-  void DetectStatusIndicatorMode();
+  // This method sets the Status Indicator Mode.
+  void SetStatusIndicatorMode(StatusIndicatorMode mode);
 
+  // This method should be called when any MIDI Event is sent.
   void OnMidiEvent(MidiEventType midiEventType, uint8_t value, uint8_t channel);
 
+  // This method should periodically be called to update the Status Indicator LED.
   void UpdateStatusIndicator();
 
+  // Clears the Note On Flags.
+  void Reset();
+
 private:
+  // This method returns an indication whether any notes are on.
   bool IsAnyNoteOn();
 };
 

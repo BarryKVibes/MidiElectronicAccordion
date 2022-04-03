@@ -28,57 +28,79 @@
 
 #include "MIDIAccordion.h"
 
-#include "StatusManager.h"
 #include "MIDIEventFlasher.h"
 #include "SharedConstants.h"
 #include "SharedMacros.h"
+#include "StatusManager.h"
 
 extern MIDIEventFlasher gMIDIEventFlasher;
-
-// Tracks note-on states for MIDI notes. 255 Notes packed into eight 32-bit bytes.
-uint32_t noteOnFlags[8][16]; // TODO: Magic numbers here and elsewhere.
+extern StatusManager gStatusManager;
 
 // This method is the class constructor.
 StatusManager::StatusManager()
 {
+  Reset();
 }
- 
+
+void StatusManager::Reset()
+{
+  for (int bank = 0; bank < NumNoteFlagBanks; bank++)
+  {
+    for (int channel = 0; channel < NumMidiChannels; channel++)
+    {
+      mNoteOnFlags[bank][channel] = 0;
+    }
+  }
+}
+
+void StatusManager::SetStatusIndicatorMode(StatusIndicatorMode mode)
+{
+  mStatusIndicatorMode = mode;
+  DBG_PRINT_LN("StatusManager::SetStatusIndicatorMode() - mStatusIndicatorMode = " + String(mStatusIndicatorMode) + ".");
+}
+
 void StatusManager::OnMidiEvent(MidiEventType midiEventType, uint8_t value, uint8_t channel)
 {
+  if (mStatusIndicatorMode == StatusIndicatorMode::FlashMidiEvents)
+  {
+    gMIDIEventFlasher.OnMidiEvent();
+    return;
+  }
+  
   if (midiEventType == MidiEventType::Other)
   {
-    UpdateStatusIndicator();
+    gMIDIEventFlasher.OnMidiEvent();
     return;
   }
 
-  uint8_t bank = value / 32;
-  uint32_t bitNum = value % 32;
+  const byte NumBitsInMask = 32;
+  uint8_t bank = value / NumBitsInMask;
+  uint32_t bitNum = value % NumBitsInMask;
   unsigned long mask = (0x00000001L << bitNum);
 
   if (midiEventType == MidiEventType::NoteOn)
   {
     // Set flag.
-    noteOnFlags[bank][channel] |= mask;
+    mNoteOnFlags[bank][channel] |= mask;
   }
 
   if (midiEventType == MidiEventType::NoteOff)
   {
     // Clear flag.
-    noteOnFlags[bank][channel] &= ~mask;
+    mNoteOnFlags[bank][channel] &= ~mask;
   }
 
-  // DBG_PRINT_LN("StatusManager::OnMidiEvent() - noteOnFlags[" + String(bank) + "][" + String(channel) + "] = 0x" + String(noteOnFlags[bank][channel], HEX) + ".");
-
+  // DBG_PRINT_LN("StatusManager::OnMidiEvent() - mNoteOnFlags[" + String(bank) + "][" + String(channel) + "] = 0x" + String(mNoteOnFlags[bank][channel], HEX) + ".");
+  
   UpdateStatusIndicator();
 }
 
 void StatusManager::UpdateStatusIndicator()
 {
-  DBG_PRINT_LN("StatusManager::UpdateStatusIndicator() - Entered.");
   switch(mStatusIndicatorMode)
   {
     case StatusIndicatorMode::FlashMidiEvents:
-      gMIDIEventFlasher.OnMidiEvent();
+      gMIDIEventFlasher.UpdateStatusLed();
       break;
       
     case StatusIndicatorMode::OnWhileAnyNoteButtonDepressed:
@@ -99,12 +121,14 @@ void StatusManager::UpdateStatusIndicator()
 
 bool StatusManager::IsAnyNoteOn()
 {
-  for (int bank = 0; bank < 8; bank++)
+  for (int bank = 0; bank < NumNoteFlagBanks; bank++)
   {
-    for (int channel = 0; channel < 16; channel++)
+    for (int channel = 0; channel < NumMidiChannels; channel++)
     {
-      if (noteOnFlags[bank][channel] != 0)
+      if (mNoteOnFlags[bank][channel] != 0)
       {
+        DBG_PRINT_LN("StatusManager::IsAnyNoteOn() - On at bank = " + String(bank) + "; channel = " + String(channel) + ".");
+
         return true;
       }
     }

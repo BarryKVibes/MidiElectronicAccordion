@@ -32,6 +32,7 @@
 #include "Utilities/Utilities.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
+#include "StatusManager.h"
 #include "ToneButtonManager.h"
 
 const uint8_t MinMidiVolumeValueDifference = 2;
@@ -39,8 +40,8 @@ const uint8_t MinMidiVolumeValueDifference = 2;
 // Channel Volume Control affects only one channel.
 const uint8_t ChannelVolumeControl = 0x07;
 
+extern StatusManager gStatusManager;
 extern ToneButtonManager gToneButtonManager; // TODO: Inject dependency.
-extern MIDIEventFlasher gMIDIEventFlasher;
 
 // This class is used by the Right Hand Arduino to keep track of the Tone Button states.
 VolumeChangeManager::VolumeChangeManager()
@@ -90,10 +91,10 @@ void VolumeChangeManager::SendMidiVolumeChangeOnChannel(byte midiVolumeValue, by
 {
 #ifdef SEND_MIDI
   midi_controller_change(channelZeroBased, ChannelVolumeControl, midiVolumeValue);
-  gMIDIEventFlasher.OnMidiEvent();
 #else
   DBG_PRINT_LN("VolumeChangeManager::SendMidiVolumeChangeOnChannel() - Sending MIDI Volume: 0x" + String(midiVolumeValue, HEX) + " = " + String(midiVolumeValue) + " on Channel " + String(channelZeroBased + 1) + ".");
 #endif
+  gStatusManager.OnMidiEvent(MidiEventType::Other, ChannelVolumeControl, channelZeroBased);
 }
 
 bool VolumeChangeManager::IsVolumeChangedSignificantly(VolumeControlType volumeControlType)

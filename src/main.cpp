@@ -179,8 +179,7 @@ void loop()
   pButtonsManager->FetchLeftHandArduinoButtons();
   #endif // DISABLE_I2C
 
-  gMIDIEventFlasher.UpdateStatusLed();
-  
+  gStatusManager.UpdateStatusIndicator();
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   // DBG_PRINT_LN("Loop() BUILD_LEFT_HAND_SLAVE - Calling pButtonsManager->ReadButtons().");
   pButtonsManager->ReadButtons(leftHandButtons, NumLeftHandButtons, buttonChangedHandler);

@@ -58,6 +58,9 @@ const unsigned long DebounceDelayMs = 25;
 // 2 Bytes for Tone Button bit mask.
 const int NumBytesExpectedFromLeftHandArduino = 6;
 
+const byte MaxMidiNotes = 128;
+const byte NumMidiChannels = 16;
+
 // Zero-based MIDI Channels.
 // MIDI channel from 0 to 15 ( 1-16 in "real world")
 const uint8_t RightHandLayer1ZeroBasedMidiChannel = 0; // MIDI Channel 1

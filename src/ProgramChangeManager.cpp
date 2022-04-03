@@ -29,14 +29,15 @@
 #include "MIDIAccordion.h"
 #include "MIDIEventFlasher.h"
 #include "ProgramChangeManager.h"
-#include "Utilities/Utilities.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
+#include "StatusManager.h"
 #include "ToneButtonManager.h"
+#include "Utilities/Utilities.h"
 
 const uint8_t MaxProgramNumber = 0x7F;
 
-extern MIDIEventFlasher gMIDIEventFlasher;
+extern StatusManager gStatusManager;
 extern ToneButtonManager gToneButtonManager;
 
 ProgramChangeManager::ProgramChangeManager()
@@ -81,10 +82,10 @@ void ProgramChangeManager::SendCurrentProgramNumberChange(uint8_t zeroBasedMidiC
 {
 #ifdef SEND_MIDI
   midi_program_change(zeroBasedMidiChannel, mCurMidiProgramNum);
-  gMIDIEventFlasher.OnMidiEvent();
 #else
   DBG_PRINT_LN("ProgramChangeManager::SendCurrentProgramNumberChange() - Sending Program Change = " + String(mCurMidiProgramNum) + ".");
 #endif
+  gStatusManager.OnMidiEvent(MidiEventType::Other, mCurMidiProgramNum, zeroBasedMidiChannel);
 }
 
 uint8_t ProgramChangeManager::GetHighestEnabledLayersChannel()

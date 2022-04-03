@@ -29,24 +29,27 @@
 #include "Button.h"
 #include "MIDIAccordion.h"
 #include "MIDIEventFlasher.h"
-#include "ToneButtonManager.h"
-#include "Utilities/Utilities.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
+#include "StatusManager.h"
+#include "ToneButtonManager.h"
+#include "Utilities/Utilities.h"
 #include "VolumeChangeManager.h"
 
+extern StatusManager gStatusManager;
 extern VolumeChangeManager gVolumeChangeManager;
-extern MIDIEventFlasher gMIDIEventFlasher;
 
 // This class is used by the Right Hand Arduino to keep track of the Tone Button states.
 // If the state changes, this class reacts to the change depending on which switch was toggled.
 // If toggle from Active to Inactive:
+// - ToneButtoneRole::Panic: When toggled to On, sends All Notes of on all MIDI Channels.
 // - ToneButtonRole::MelodyLayer1Enabled: Sends All Notes Off on MIDI Channel corresponding to RH Layer 1.
 // - ToneButtonRole::MelodyLayer2Enabled: Sends All Notes Off on MIDI Channel corresponding to RH Layer 2.
 // - ToneButtonRole::MelodyLayer3Enabled: Sends All Notes Off on MIDI Channel corresponding to RH Layer 3.
 // - ToneButtonRole::MelodyLayer4Enabled: Sends All Notes Off on MIDI Channel corresponding to RH Layer 4.
 // If toggle to either state:
 // - ToneButtonRole::BellowsControlledVolumeEnabled: Update MIDI Volume.
+// - ToneButtonRole::StatusLedWhileAnyNoteOn: Set StatusManager mode.
 ToneButtonManager::ToneButtonManager()
 {
 }
@@ -62,7 +65,18 @@ void ToneButtonManager::SetIsActive(byte buttonIndex, bool isActive)
   // Tone buttons do not send MIDI notes; they send control information, or set flags used by other entities.
   // The following corresponds to switches on the Tombo Accordix electronic accordion.
   mToneButtonStates[buttonIndex] = isActive;
-  DBG_PRINT_LN("ToneButtonManager::SetState() - toneButtonStates[" + String(buttonIndex) + "] = " + String(mToneButtonStates[buttonIndex]));
+  DBG_PRINT_LN("ToneButtonManager::SetIsActive() - toneButtonStates[" + String(buttonIndex) + "] = " + String(mToneButtonStates[buttonIndex]));
+
+  if (isActive)
+  {
+    // Make sure there are no hanging notes when the instrument button is turned off.
+    switch (buttonIndex)
+    {
+      case ToneButtonRole::Panic:
+        // TODO: Send AllNotesOff on all channels.
+        break;
+    }
+  }
 
   if (!isActive)
   {
@@ -91,9 +105,21 @@ void ToneButtonManager::SetIsActive(byte buttonIndex, bool isActive)
   switch (buttonIndex)
   {
     case ToneButtonRole::BellowsControlledVolumeEnabled:
+      {
+        const bool IsForceUpdate = true;
+        gVolumeChangeManager.UpdateMidiVolumeControl(IsForceUpdate);
+      }
+      break;
 
-      const bool IsForceUpdate = true;
-      gVolumeChangeManager.UpdateMidiVolumeControl(IsForceUpdate);
+    case ToneButtonRole::StatusLedWhileAnyNoteOn:
+      if (isActive)
+      {
+        gStatusManager.SetStatusIndicatorMode(StatusIndicatorMode::OnWhileAnyNoteButtonDepressed);
+      }
+      else
+      {
+        gStatusManager.SetStatusIndicatorMode(StatusIndicatorMode::FlashMidiEvents);
+      }
       break;
   }
 }
@@ -114,14 +140,13 @@ bool ToneButtonManager::GetIsActive(ToneButtonRole toneButtonRole)
 // This method sends MIDI All Notes Off CC message on zero-based MIDI Channel passed in.
 void ToneButtonManager::SendAllNotesOffOnChannel(byte channelZeroBased)
 {
-#ifdef SEND_MIDI
-  // Channel Volume Control affects only once channel.
+  // Channel Volume Control affects only one channel.
   const byte ChannelAllNotesOffControl = 123;
+#ifdef SEND_MIDI
   const byte AllNotesOffValue = 0; // Per MIDI Spec, https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
-
   midi_controller_change(channelZeroBased, ChannelAllNotesOffControl, AllNotesOffValue);
-  gMIDIEventFlasher.OnMidiEvent();
 #else
   DBG_PRINT_LN("ToneButtonManager::SendAllNotesOffOnChannel() - Zero-Based Channel = 0x" + String(channelZeroBased) + ".");
 #endif
+  gStatusManager.OnMidiEvent(MidiEventType::Other, ChannelAllNotesOffControl, channelZeroBased);
 }
