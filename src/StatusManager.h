@@ -71,12 +71,15 @@ public:
   // This method should periodically be called to update the Status Indicator LED.
   void UpdateStatusIndicator();
 
-  // Clears the Note On Flags.
-  void Reset();
+  // Clears the Note On Flags for the zero-based MIDI Channel, passed in.
+  void ResetChannel(uint8_t midiChannelZeroBased);
 
 private:
   // This method returns an indication whether any notes are on.
   bool IsAnyNoteOn();
+
+  // Clears the Note On Flags for all MIDI Channels.
+  void ResetAllChannels();
 };
 
 #endif // BUILD_RIGHT_HAND_MASTER

@@ -39,17 +39,22 @@ extern StatusManager gStatusManager;
 // This method is the class constructor.
 StatusManager::StatusManager()
 {
-  Reset();
+  ResetAllChannels();
 }
 
-void StatusManager::Reset()
+void StatusManager::ResetChannel(uint8_t midiChannelZeroBased)
 {
   for (int bank = 0; bank < NumNoteFlagBanks; bank++)
   {
-    for (int channel = 0; channel < NumMidiChannels; channel++)
-    {
-      mNoteOnFlags[bank][channel] = 0;
-    }
+    mNoteOnFlags[bank][midiChannelZeroBased] = 0;
+  }
+}
+
+void StatusManager::ResetAllChannels()
+{
+  for (int channel = 0; channel < NumMidiChannels; channel++)
+  {
+    ResetChannel(channel);
   }
 }
 
@@ -57,6 +62,10 @@ void StatusManager::SetStatusIndicatorMode(StatusIndicatorMode mode)
 {
   mStatusIndicatorMode = mode;
   DBG_PRINT_LN("StatusManager::SetStatusIndicatorMode() - mStatusIndicatorMode = " + String(mStatusIndicatorMode) + ".");
+
+  ResetAllChannels();
+  digitalWrite(LedPin, LOW);
+  UpdateStatusIndicator();
 }
 
 void StatusManager::OnMidiEvent(MidiEventType midiEventType, uint8_t value, uint8_t channel)

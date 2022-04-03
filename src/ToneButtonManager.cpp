@@ -73,7 +73,11 @@ void ToneButtonManager::SetIsActive(byte buttonIndex, bool isActive)
     switch (buttonIndex)
     {
       case ToneButtonRole::Panic:
-        // TODO: Send AllNotesOff on all channels.
+        // Send AllNotesOff on all channels.
+        for (int channel = 0; channel < NumMidiChannels; channel++)
+        {
+          SendAllNotesOffOnChannel(channel);
+        }
         break;
     }
   }
@@ -149,4 +153,5 @@ void ToneButtonManager::SendAllNotesOffOnChannel(byte channelZeroBased)
   DBG_PRINT_LN("ToneButtonManager::SendAllNotesOffOnChannel() - Zero-Based Channel = 0x" + String(channelZeroBased) + ".");
 #endif
   gStatusManager.OnMidiEvent(MidiEventType::Other, ChannelAllNotesOffControl, channelZeroBased);
+  gStatusManager.ResetChannel(channelZeroBased);
 }
