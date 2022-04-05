@@ -26,8 +26,6 @@
 
 #include "../lib/ArduMidi/ardumidi.h"
 
-#include "MIDIAccordion.h"
-
 #include "ProgramChangeButtonChangedHandler.h"
 
 #ifdef BUILD_RIGHT_HAND_MASTER
