@@ -34,12 +34,19 @@
 #include "ButtonsManager.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
 #include "ToneButtonManager.h"
+#endif // BUILD_RIGHT_HAND_MASTER
+
 #include "Utilities/Utilities.h"
 
 #include "ButtonChangedHandlers/BassButtonChangedHandler.h"
 #include "ButtonChangedHandlers/ChordButtonChangedHandler.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
 #include "ButtonChangedHandlers/ToneButtonChangedHandler.h"
+#endif // BUILD_RIGHT_HAND_MASTER
 
 extern Button leftHandButtons[NumLeftHandButtons];
 extern Button rightHandButtons[NumRightHandButtons];
@@ -50,10 +57,10 @@ BassButtonChangedHandler bassButtonChangedHandler;
 ChordButtonChangedHandler chordButtonChangedHandler;
 ToneButtonChangedHandler toneButtonChangedHandler;
 
-#endif // BUILD_RIGHT_HAND_MASTER
-
 // TODO: Pass into ToneButtonChangedHandler as dependency?
 ToneButtonManager gToneButtonManager;
+
+#endif // BUILD_RIGHT_HAND_MASTER
 
 #if defined(DEBUG_I2C)
 static int numFetches = 0;

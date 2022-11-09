@@ -27,6 +27,9 @@
 #include "lib/ArduMidi/ardumidi.h"
 
 #include "MIDIAccordion.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
+
 #include "MIDIEventFlasher.h"
 #include "VolumeChangeManager.h"
 #include "Utilities/Utilities.h"
@@ -240,3 +243,5 @@ uint8_t VolumeChangeManager::GetBellowsVolume()
 
   return bellowsVolume;
 }
+
+#endif // BUILD_RIGHT_HAND_MASTER

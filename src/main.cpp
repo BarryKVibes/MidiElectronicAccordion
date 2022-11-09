@@ -182,7 +182,7 @@ void loop()
   gStatusManager.UpdateStatusIndicator();
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   // DBG_PRINT_LN("Loop() BUILD_LEFT_HAND_SLAVE - Calling pButtonsManager->ReadButtons().");
-  pButtonsManager->ReadButtons(leftHandButtons, NumLeftHandButtons, buttonChangedHandler);
+  pButtonsManager->ReadButtons(leftHandButtons, 0, NumLeftHandButtons-1, leftHandButtonChangedHandler);
   // Uncomment if using sensors in the LH Arduino. pButtonsManager->ReadSensors(leftHandSensors, NumLeftHandSensors, sensorChangedHandler);
 #endif
 }

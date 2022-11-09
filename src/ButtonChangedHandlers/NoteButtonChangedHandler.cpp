@@ -25,14 +25,17 @@
  ******************************************************************************/
 
 #include "../lib/ArduMidi/ardumidi.h"
-
+#include "MIDIAccordion.h"
 #include "../MIDIEventFlasher.h"
 #include "NoteButtonChangedHandler.h"
 
 #include "../SharedMacros.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
 #include "../StatusManager.h"
 
 extern StatusManager gStatusManager;
+#endif // BUILD_RIGHT_HAND_MASTER
 
 NoteButtonChangedHandler::NoteButtonChangedHandler()
 {
@@ -53,7 +56,9 @@ void NoteButtonChangedHandler::SendMidiNoteCommand(byte noteNum, bool isActive, 
     DBG_PRINT_LN(" - MIDI Note On: 0x" + String(noteNum, HEX));
 #endif
 
+#ifdef BUILD_RIGHT_HAND_MASTER
     gStatusManager.OnMidiEvent(MidiEventType::NoteOn, noteNum, channelZeroBased);
+#endif
    }
   else {
     // Button is released; send Note On.
@@ -63,6 +68,8 @@ void NoteButtonChangedHandler::SendMidiNoteCommand(byte noteNum, bool isActive, 
     DBG_PRINT_LN(" - MIDI Note Off: 0x" + String(noteNum, HEX));
 #endif
 
+#ifdef BUILD_RIGHT_HAND_MASTER
     gStatusManager.OnMidiEvent(MidiEventType::NoteOff, noteNum, channelZeroBased);
+#endif
   }
 }

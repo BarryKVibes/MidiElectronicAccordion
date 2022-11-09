@@ -26,8 +26,10 @@
 
 #include "lib/ArduMidi/ardumidi.h"
 
-#include "Button.h"
 #include "MIDIAccordion.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
+#include "Button.h"
 #include "MIDIEventFlasher.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
@@ -155,3 +157,5 @@ void ToneButtonManager::SendAllNotesOffOnChannel(byte channelZeroBased)
   gStatusManager.OnMidiEvent(MidiEventType::Other, ChannelAllNotesOffControl, channelZeroBased);
   gStatusManager.ResetChannel(channelZeroBased);
 }
+
+#endif // BUILD_RIGHT_HAND_MASTER

@@ -27,6 +27,7 @@
 #include <Arduino.h>
 
 #include "MIDIAccordion.h"
+#ifdef BUILD_RIGHT_HAND_MASTER
 
 #include "MIDIEventFlasher.h"
 #include "SharedConstants.h"
@@ -145,3 +146,5 @@ bool StatusManager::IsAnyNoteOn()
 
   return false;
 }
+
+#endif // BUILD_RIGHT_HAND_MASTER

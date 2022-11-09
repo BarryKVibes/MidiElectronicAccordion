@@ -31,13 +31,20 @@
 #include "ProgramChangeManager.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
-#include "StatusManager.h"
+
+#ifdef BUILD_RIGHT_HAND_MASTER
+  #include "StatusManager.h"
+#endif // BUILD_RIGHT_HAND_MASTER
+
 #include "ToneButtonManager.h"
 #include "Utilities/Utilities.h"
 
 const uint8_t MaxProgramNumber = 0x7F;
 
+#ifdef BUILD_RIGHT_HAND_MASTER
 extern StatusManager gStatusManager;
+#endif // BUILD_RIGHT_HAND_MASTER
+
 extern ToneButtonManager gToneButtonManager;
 
 ProgramChangeManager::ProgramChangeManager()
@@ -85,7 +92,10 @@ void ProgramChangeManager::SendCurrentProgramNumberChange(uint8_t zeroBasedMidiC
 #else
   DBG_PRINT_LN("ProgramChangeManager::SendCurrentProgramNumberChange() - Sending Program Change = " + String(mCurMidiProgramNum) + ".");
 #endif
+
+#ifdef BUILD_RIGHT_HAND_MASTER
   gStatusManager.OnMidiEvent(MidiEventType::Other, mCurMidiProgramNum, zeroBasedMidiChannel);
+#endif // BUILD_RIGHT_HAND_MASTER
 }
 
 uint8_t ProgramChangeManager::GetHighestEnabledLayersChannel()

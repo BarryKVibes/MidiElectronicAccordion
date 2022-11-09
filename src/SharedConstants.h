@@ -50,7 +50,7 @@ const int NumRightHandSensors = 5; // Bellows Slide Pot, and 4 Rotary Potentiome
 
 // The debounce time, in milliseconds. This is the duration to ignore button state changes.
 // It is an unsigned longs because the time, measured in milliseconds, will quickly become a bigger number than can be stored in an int.
-const unsigned long DebounceDelayMs = 25;
+const unsigned long DebounceDelayMs = 50;
 
 // Number of data bytes (button bit mask bytes) expected from LH Arduino.
 // 2 Bytes for Bass Button bit mask.
