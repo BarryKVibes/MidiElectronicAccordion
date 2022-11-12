@@ -31,6 +31,8 @@
 
 #include "MIDIAccordion.h"
 
+//#include "lib/ArduMidi/ArduMidi.h"
+
 #include "ButtonsManager.h"
 #include "SharedMacros.h"
 #include "SharedConstants.h"
@@ -81,21 +83,22 @@ ButtonsManager::ButtonsManager(Button* leftHandButtons, Button* rightHandButtons
 {
 }
 
-// This method reads the digital input pin corresponding the the buttons passed in, after the debounce time has elapsed.
+// This method reads the digital input pin corresponding the the buttons passed in.
+// If input parameter, debounce, is true, the read occurs only after the debounce time has elapsed.
 // It is used by both the RH and LH Arduinos.
-void ButtonsManager::ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler)
+// Debounce is expected to be performed only on the RH Arduino; LH Arduino continually updates its button state.
+void ButtonsManager::ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler, bool debounce)
 {
   // DBG_PRINT_LN("ButtonsManager::ReadButtons() - Started.");
   bool newButtonState = false;
   for (byte i = startButtonIndex; i <= endButtonIndex; i++)
   {
-     if (!IsButtonDebounced(buttons[i]))
+    if (debounce && !IsButtonDebounced(buttons[i]))
     {
       continue;
     }
 
     // Button has been debounced; OK to read the corresponding pin value.
-    //int inputVal = digitalRead(buttons[i].buttonState.pin);
     int inputVal = digitalRead(buttons[i].buttonState.pin);
     // DBG_PRINT_LN("ButtonsManager::ReadButtons() - ["+String(i)+"] @ Pin "+String(buttons[i].buttonState.pin)+"= "+String(inputVal)+".");
 
@@ -292,11 +295,26 @@ void ButtonsManager::UpdateLeftHandButtonStates()
           // DBG_PRINT("ButtonsManager.Update() - NewBassButtonMask: b"); PRINTBIN(mNewBassButtonFlags);
 
           bool isActive = newFlag != 0;
+          bool isToggled = curButton.buttonState.active != isActive;
           curButton.buttonState.active = isActive;
-          curButton.lastToggleTimeMs = lastToggleTimeMs;
 
-          // DBG_PRINT_LN("ButtonsManager.Update() - BassButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
-          bassButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 0);
+          // Only handle change, reset toggle time, and update the CurButtonFlags bit state only if button state was toggled.
+          if (isToggled)
+          {
+            curButton.lastToggleTimeMs = lastToggleTimeMs;
+  
+            // DBG_PRINT_LN("ButtonsManager.Update() - BassButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
+            bassButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 0);
+
+            if (isActive)
+            {
+              BIT_SET(mCurBassButtonFlags, i);
+            }
+            else
+            {
+              BIT_CLEAR(mCurBassButtonFlags, i);
+            }
+          }
         }
       }
     }
@@ -321,11 +339,26 @@ void ButtonsManager::UpdateLeftHandButtonStates()
           // DBG_PRINT("ButtonsManager.Update() - NewChordButtonMask: b"); PRINTBIN(mNewChordButtonFlags);
 
           bool isActive = newFlag != 0;
+          bool isToggled = curButton.buttonState.active != isActive;
           curButton.buttonState.active = isActive;
-          curButton.lastToggleTimeMs = lastToggleTimeMs;
 
-          // DBG_PRINT_LN("ButtonsManager.Update() - ChordButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
-          chordButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 12);
+          // Only handle change, reset toggle time, and update the CurButtonFlags bit state only if button state was toggled.
+          if (isToggled)
+          {
+            curButton.lastToggleTimeMs = lastToggleTimeMs;
+
+            // DBG_PRINT_LN("ButtonsManager.Update() - ChordButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
+            chordButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 12);
+
+            if (isActive)
+            {
+              BIT_SET(mCurChordButtonFlags, i);
+            }
+            else
+            {
+              BIT_CLEAR(mCurChordButtonFlags, i);
+            }
+          }
         }
       }
     }
@@ -350,29 +383,39 @@ void ButtonsManager::UpdateLeftHandButtonStates()
           // DBG_PRINT("ButtonsManager.Update() - NewToneButtonMask: b"); PRINTBIN(mNewToneButtonFlags);
 
           bool isActive = newFlag != 0;
+          bool isToggled = curButton.buttonState.active != isActive;
           curButton.buttonState.active = isActive;
-          curButton.lastToggleTimeMs = lastToggleTimeMs;
+         
+          // Only handle change, reset toggle time, and update the CurButtonFlags bit state only if button state was toggled.
+          if (isToggled)
+          {
+            curButton.lastToggleTimeMs = lastToggleTimeMs;
+            
+            // DBG_PRINT_LN("ButtonsManager.Update() - ToneButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
+            toneButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 24);
 
-          // DBG_PRINT_LN("ButtonsManager.Update() - ToneButton["+ String(i) + "]: isActive = " + String(curButton.buttonState.active));
-          toneButtonChangedHandler.HandleButtonChange(mLeftHandButtons, i + 24);
+            if (isActive)
+            {
+              BIT_SET(mCurToneButtonFlags, i);
+            }
+            else
+            {
+              BIT_CLEAR(mCurToneButtonFlags, i);
+            }
+          }
         }
       }
     }
   }
-
-  // Update Cur with New.
-  mCurBassButtonFlags = mNewBassButtonFlags;
-  mCurChordButtonFlags = mNewChordButtonFlags;
-  mCurToneButtonFlags = mNewToneButtonFlags;
- }
+}
 
 // This method updates the button flag members with the received byte from the LH Arduino over I2C.
 void ButtonsManager::UpdateNewButtonFlags(uint8_t receivedByte, int receivedByteIndex)
 {
   // Left Hand slave sends bytes in the following order.
   //  (2) Bass Button bytes
-  //  (2)Chord Button bytes
-  //  (2)Tone Button bytes
+  //  (2) Chord Button bytes
+  //  (2) Tone Button bytes
 
   // Cast 16-bit words as arrays of bytes.
   uint8_t* BassButtonBytes = (byte*)&mNewBassButtonFlags;

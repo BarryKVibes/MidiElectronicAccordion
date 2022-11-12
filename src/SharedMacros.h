@@ -48,4 +48,8 @@
 #define COUNT_ENTRIES(ARRAY)        (sizeof(ARRAY) / sizeof(ARRAY[0]))
 #define PRINTBIN(Num) for (uint32_t t = (1UL<< (sizeof(Num)*8)-1); t; t >>= 1) {Serial.write(Num  & t ? '1' : '0');} Serial.println(""); // Prints a binary number with leading zeros (Automatic Handling)
 
+#define BIT_SET(a,b) ((a) |= (1ULL<<(b)))
+#define BIT_CLEAR(a,b) ((a) &= ~(1ULL<<(b)))
+#define BIT_FLIP(a,b) ((a) ^= (1ULL<<(b)))
+
 #endif

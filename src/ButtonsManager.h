@@ -53,7 +53,7 @@ private:
 public:
   ButtonsManager(Button* leftHandButtons, Button* rightHandButtons, Sensor* leftHandSensors, Sensor* rightHandSensors);
 
-  void ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler);
+  void ReadButtons(Button* buttons, int startButtonIndex, int endButtonIndex, ButtonChangedHandlerBase& buttonChangedHandler, bool debounce);
 
 #ifdef BUILD_RIGHT_HAND_MASTER
   void ReadSensors(Sensor* sensors, int numSensors, SensorChangedHandlerBase& sensorChangedHandler);

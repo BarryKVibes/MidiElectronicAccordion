@@ -164,10 +164,10 @@ void loop()
   // Read buttons attached to Right Hand Arduino.
 
   // Keys
-  pButtonsManager->ReadButtons(rightHandButtons, 0, 40, melodyButtonChangedHandler);
+  pButtonsManager->ReadButtons(rightHandButtons, 0, 40, melodyButtonChangedHandler, true);
 
   // Custom Buttons
-  pButtonsManager->ReadButtons(rightHandButtons, 41, 42, programChangeButtonChangedHandler);
+  pButtonsManager->ReadButtons(rightHandButtons, 41, 42, programChangeButtonChangedHandler, true);
   
   #ifndef DISABLE_SENSOR_READS
   pButtonsManager->ReadSensors(rightHandSensors, NumRightHandSensors, sensorChangedHandler);
@@ -182,7 +182,7 @@ void loop()
   gStatusManager.UpdateStatusIndicator();
 #elif defined(BUILD_LEFT_HAND_SLAVE)
   // DBG_PRINT_LN("Loop() BUILD_LEFT_HAND_SLAVE - Calling pButtonsManager->ReadButtons().");
-  pButtonsManager->ReadButtons(leftHandButtons, 0, NumLeftHandButtons-1, leftHandButtonChangedHandler);
+  pButtonsManager->ReadButtons(leftHandButtons, 0, NumLeftHandButtons-1, leftHandButtonChangedHandler, false);
   // Uncomment if using sensors in the LH Arduino. pButtonsManager->ReadSensors(leftHandSensors, NumLeftHandSensors, sensorChangedHandler);
 #endif
 }
